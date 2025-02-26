@@ -1,3 +1,5 @@
 from django.contrib import admin
+from .models import Zone, Record
 
-# Register your models here.
+admin.site.register(Zone)
+admin.site.register(Record)
