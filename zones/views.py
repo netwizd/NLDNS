@@ -148,7 +148,7 @@ $TTL {zone.ttl}
 zone "{zone.name}" {{
     type slave;
     masters {{ {zone.master_ip}; }};
-    file "{settings.BIND_ZONES_PATH}/db.{zone.name}";
+    file "/var/cache/bind/db.{zone.name}";
 }};
 """
         with open(zone_file_path, 'w') as zone_file:
