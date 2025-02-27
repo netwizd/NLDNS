@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% if messages %}
+    <div class="notification is-success">
+        <button class="delete"></button>
+        {% for message in messages %}
+            {{ message }}
+        {% endfor %}
+    </div>
+{% endif %}
+
+{% block content %}
+<h1 class="title">Zones</h1>
+<a class="button is-primary mb-4" href="{% url 'zone_create' %}">Create Zone</a>
+<table class="table is-striped is-fullwidth">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Last Modified</th>
+            <th>Description</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for zone in zones %}
+        <tr>
+            <td>
+                <a href="{% url 'zone_detail' zone.pk %}" class="has-text-link">
+                    {{ zone.name }}
+                </a>
+            </td>
+            <td>
+                <span class="tag 
+                    {% if zone.zone_type == 'master' %}is-success
+                    {% elif zone.zone_type == 'slave' %}is-info
+                    {% elif zone.zone_type == 'forward' %}is-warning
+                    {% elif zone.zone_type == 'redirect' %}is-danger
+                    {% endif %}">
+                    {{ zone.get_zone_type_display }}
+                </span>
+            </td>
+            <td>{{ zone.updated_at|date:"Y-m-d H:i" }}</td>
+            <td>
+                {% if zone.description %}
+                    {{ zone.description }}
+                {% else %}
+                    <span class="has-text-grey-light">No description</span>
+                {% endif %}
+            </td>
+            <td>
+                <a class="button is-small is-info" href="{% url 'zone_update' zone.pk %}">Edit</a>
+                <button class="button is-small is-danger" onclick="confirmDelete({{ zone.pk }});">Delete</button>
+                <form id="delete-form-{{ zone.pk }}" action="{% url 'zone_delete' zone.pk %}" method="post" style="display:none;">
+                    {% csrf_token %}
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script>
+    function confirmDelete(zoneId) {
+        if (confirm("Are you sure you want to delete this zone?")) {
+            document.getElementById(`delete-form-${zoneId}`).submit();
+        }
+    }
+</script>
+{% endblock %}

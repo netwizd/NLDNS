@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="title">Zone Details: {{ zone.name }}</h1>
+<pre>{{ zone_content }}</pre>
+<a class="button is-light" href="{% url 'zone_list' %}">Назад к списку зон</a>
+<a class="button is-info" href="{% url 'zone_update' zone.pk %}">Редактировать</a>
+<a class="button is-danger" href="{% url 'zone_delete' pk=zone.pk %}">Удалить</a>
+{% endblock %}

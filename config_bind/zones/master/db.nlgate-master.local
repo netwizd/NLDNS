@@ -1,0 +1,11 @@
+
+$TTL 86400
+@   IN  SOA ns1.nlgate-master.local. admin.nlgate-master.local. (
+        20250124 ; Serial
+        3600     ; Refresh
+        1800     ; Retry
+        1209600  ; Expire
+        86400    ; Minimum TTL
+)
+    IN  NS  ns1.nlgate-master.local.
+    IN  NS  ns2.nlgate-master.local.

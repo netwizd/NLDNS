@@ -33,7 +33,6 @@ INSTALLED_APPS = [
     'notifications',
     'users',
 ]
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -46,10 +45,16 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'core.urls'
 
+BIND_CONFIG_PATH = BASE_DIR / 'config_bind'
+BIND_ZONES_PATH = BIND_CONFIG_PATH / 'zones'
+BIND_NAMED_CONF = BIND_CONFIG_PATH / 'named.conf.local'
+BIND_OPTIONS_CONF = BIND_CONFIG_PATH / 'named.conf.options'
+BIND_FORWARD_PATH = BIND_CONFIG_PATH / 'forward'
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -118,7 +123,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'static'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [BASE_DIR / 'static']
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

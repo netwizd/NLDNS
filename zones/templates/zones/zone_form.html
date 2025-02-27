@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="title">{% if edit_mode %}Редактирование зоны{% else %}Создание зоны{% endif %}</h1>
+<div class="notification is-info mt-4">
+    <strong>Подсказка:</strong> 
+    <ul>
+        <li>Имя зоны вводится без точки в конце (например, <code>example.com</code>).</li>
+        <li>Zone Type Master — сервер сам обслуживает зону.</li>
+        <li>Zone Type Slave — копирует зону с внешнего мастер-сервера.</li>
+        <li>Zone Type Forward — перенаправляет запросы на внешний DNS-сервер с кешированием.</li>
+        <li>Zone Type Redirect — перенаправляет запросы на внешний DNS-сервер без кеширования.</li>
+        <li>SOA (Start of Authority) в формате: <code>admin.example.com.</code></li>
+        <li>TTL по умолчанию: 86400 секунд (1 день).</li>
+    </ul>
+</div>
+
+<form method="post">
+    {% csrf_token %}
+    <div class="field">
+        <label class="label">Name:</label>
+        <div class="control">
+            {{ form.name }}
+            {% if form.name.errors %}
+                <p class="help is-danger">{{ form.name.errors }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="field">
+        <label class="label">Zone Type:</label>
+        <div class="control">
+            {{ form.zone_type }}
+            {% if form.zone_type.errors %}
+                <p class="help is-danger">{{ form.zone_type.errors }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="field master-ip-field">
+        <label class="label">Master IP (только для Slave зоны):</label>
+        <div class="control">
+            {{ form.master_ip }}
+            {% if form.master_ip.errors %}
+                <p class="help is-danger">{{ form.master_ip.errors }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="field forwarders-field">
+        <label class="label">Forwarders: (для Forward и Redirect)</label>
+        <div class="control">
+            {{ form.forwarders }}
+            {% if form.forwarders.errors %}
+                <p class="help is-danger">{{ form.forwarders.errors }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="field ns1-field">
+        <label class="label">Ns1:</label>
+        <div class="control">
+            {{ form.ns1 }}
+            {% if form.ns1.errors %}
+                <p class="help is-danger">{{ form.ns1.errors }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="field ns2-field">
+        <label class="label">Ns2:</label>
+        <div class="control">
+            {{ form.ns2 }}
+            {% if form.ns2.errors %}
+                <p class="help is-danger">{{ form.ns2.errors }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="field ttl-field">
+        <label class="label">TTL:</label>
+        <div class="control">
+            {{ form.ttl }}
+            {% if form.ttl.errors %}
+                <p class="help is-danger">{{ form.ttl.errors }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="field soa-field">
+        <label class="label">SOA:</label>
+        <div class="control">
+            {{ form.soa }}
+            {% if form.soa.errors %}
+                <p class="help is-danger">{{ form.soa.errors }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="field">
+        <label class="label">Description:</label>
+        <div class="control">
+            {{ form.description }}
+        </div>
+    </div>
+
+    <button class="button is-primary" type="submit">{% if edit_mode %}Сохранить изменения{% else %}Создать зону{% endif %}</button>
+    <a class="button is-light" href="{% url 'zone_list' %}">Отмена</a>
+</form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("DOM полностью загружен");
+
+        // Функция переключения полей
+        function toggleFields() {
+            var zoneType = document.querySelector('select[name="zone_type"]').value;
+            console.log("Выбранный тип зоны:", zoneType);
+
+            var masterIpField = document.querySelector('.master-ip-field');
+            var forwardersField = document.querySelector('.forwarders-field');
+            var ns1Field = document.querySelector('.ns1-field');
+            var ns2Field = document.querySelector('.ns2-field');
+            var ttlField = document.querySelector('.ttl-field');
+            var soaField = document.querySelector('.soa-field');
+
+            if (zoneType === 'slave') {
+                masterIpField.style.display = 'block';
+                forwardersField.style.display = 'none';
+                ns1Field.style.display = 'none';
+                ns2Field.style.display = 'none';
+                ttlField.style.display = 'none';
+                soaField.style.display = 'none';
+            } else if (zoneType === 'forward' || zoneType === 'redirect') {
+                masterIpField.style.display = 'none';
+                forwardersField.style.display = 'block';
+                ns1Field.style.display = 'none';
+                ns2Field.style.display = 'none';
+                ttlField.style.display = 'none';
+                soaField.style.display = 'none';
+            } else {
+                masterIpField.style.display = 'none';
+                forwardersField.style.display = 'none';
+                ns1Field.style.display = 'block';
+                ns2Field.style.display = 'block';
+                ttlField.style.display = 'block';
+                soaField.style.display = 'block';
+            }
+        }
+
+        // При загрузке страницы запускаем проверку
+        toggleFields();
+
+        // Добавляем обработчик события на изменение select
+        var zoneTypeSelect = document.querySelector('select[name="zone_type"]');
+        if (zoneTypeSelect) {
+            zoneTypeSelect.addEventListener('change', function() {
+                console.log("Изменение выбора типа зоны");
+                toggleFields();
+            });
+        } else {
+            console.log("Ошибка: select[name='zone_type'] не найден");
+        }
+    });
+</script>
+{% endblock %}
